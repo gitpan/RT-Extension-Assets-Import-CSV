@@ -4,7 +4,7 @@ use warnings;
 package RT::Extension::Assets::Import::CSV;
 use Text::CSV_XS;
 
-our $VERSION = '1.0';
+our $VERSION = '1.1';
 
 sub _column {
     ref($_[0]) ? (ref($_[0]) eq "CODE" ?
@@ -350,25 +350,25 @@ of assets, where the column titled C<serviceTag> is unique:
 
     Set( $AssetsImportUniqueCF, 'Service Tag' );
     Set( %AssetsImportFieldMapping,
-        # 'RT custom field name' => 'CSV field name'
-        'Service Tag'            => 'serviceTag',
-        'Location'               => 'building',
-        'Serial #'               => 'serialNo',
+        'Name'           => 'description',
+        'CF.Service Tag' => 'serviceTag',
+        'CF.Location'    => 'building',
+        'CF.Serial #'    => 'serialNo',
     );
 
 =head2 Constant values
 
 If you want to set an RT column or custom field to a static value for
-all imported assets, proceed the "CSV field name" (right hand side of
+all imported assets, precede the "CSV field name" (right hand side of
 the mapping) with a slash, like so:
 
     Set( $AssetsImportUniqueCF, 'Service Tag' );
     Set( %AssetsImportFieldMapping,
-        # 'RT custom field name' => 'CSV field name'
-        'Service Tag'            => 'serviceTag',
-        'Location'               => 'building',
-        'Serial #'               => 'serialNo',
-        'Catalog'                => \'Hardware',
+        'Name'           => 'description',
+        'Catalog'        => \'Hardware',
+        'CF.Service Tag' => 'serviceTag',
+        'CF.Location'    => 'building',
+        'CF.Serial #'    => 'serialNo',
     );
 
 Every imported asset will now be added to the Hardware catalog in RT.
@@ -384,11 +384,14 @@ subroutine will be called with a hash reference of the parsed CSV row.
 
     Set( $AssetsImportUniqueCF, 'Service Tag' );
     Set( %AssetsImportFieldMapping,
-        # 'RT custom field name' => 'CSV field name'
-        'Service Tag'            => 'serviceTag',
-        'Location'               => 'building',
-        'Weight'                 => sub { $_[0]->{"Weight (kg)"} || "(unknown)" },
+        'Name'           => 'description',
+        'CF.Service Tag' => 'serviceTag',
+        'CF.Location'    => 'building',
+        'CF.Weight'      => sub { $_[0]->{"Weight (kg)"} || "(unknown)" },
     );
+
+Using computed columns may cause false-positive "unused column"
+warnings; these can be ignored.
 
 =head2 Numeric identifiers
 
@@ -398,10 +401,10 @@ choose to leave C<$AssetsImportUniqueCF> unset, and assign to C<id> in
 the C<%AssetsImportFieldMapping>:
 
     Set( %AssetsImportFieldMapping,
-        # 'RT custom field name' => 'CSV field name'
-        'id'                     => 'serviceTag',
-        'Location'               => 'building',
-        'Serial #'               => 'serialNo',
+        'id'             => 'serviceTag',
+        'Name'           => 'description',
+        'CF.Service Tag' => 'serviceTag',
+        'CF.Serial #'    => 'serialNo',
     );
 
 This requires that, after the import, RT becomes the generator of all
@@ -420,7 +423,7 @@ or L<bug-RT-Extension-Assets-Import-CSV@rt.cpan.org>.
 
 =head1 LICENSE AND COPYRIGHT
 
-This software is Copyright (c) 2012 by Best Practical Solutions
+This software is Copyright (c) 2014 by Best Practical Solutions
 
 This is free software, licensed under:
 
