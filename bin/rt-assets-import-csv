@@ -1,11 +1,11 @@
-#!/home/chmrr/prog/perlbrew/perls/perl-5.20.0/bin/perl
+#!/Users/falcone/perl5/perlbrew/perls/perl-5.20/bin/perl
 ### before: #!@PERL@
 
 use strict;
 use warnings;
 
 ### after: use lib qw(@RT_LIB_PATH@);
-use lib qw(/opt/rt4/local/lib /opt/rt4/lib);
+use lib qw(/Users/falcone/work/rt/4.2/local/lib /Users/falcone/work/rt/4.2//lib);
 
 use Getopt::Long;
 my %opt;

@@ -4,7 +4,7 @@ use warnings;
 package RT::Extension::Assets::Import::CSV;
 use Text::CSV_XS;
 
-our $VERSION = '1.3';
+our $VERSION = '1.4';
 
 sub _column {
     ref($_[0]) ? (ref($_[0]) eq "CODE" ?
@@ -61,10 +61,7 @@ sub run {
         } elsif ($fieldname =~ /^(id|Name|Status|Description|Catalog|Created|LastUpdated)$/) {
             # no-op, these are fine
         } elsif ( RT::Asset->HasRole($fieldname) ) {
-            if ( not RT::Asset->Role($fieldname)->{Single}) {
-                RT->Logger->warning( "Role name $fieldname must be single-value for "._column($field2csv->{$fieldname}).", skipping");
-                delete $field2csv->{$fieldname};
-            }
+            # no-op, roles are fine
         } else {
             RT->Logger->warning(
                 "Unknown asset field $fieldname for "._column($field2csv->{$fieldname}).", skipping");
@@ -174,7 +171,7 @@ sub run {
                     next if $asset->RoleGroup($field)->HasMember( $user->PrincipalId );
 
                     $changes++;
-                    my ($ok, $msg) = $asset->AddRoleMember( PrincipalId => $user->PrincipalId );
+                    my ($ok, $msg) = $asset->AddRoleMember( PrincipalId => $user->PrincipalId, Type => $field );
                     unless ($ok) {
                         RT->Logger->error("Failed to set $field to $value for row $i: $msg");
                     }
